@@ -1,0 +1,23 @@
+name: deploy_production
+on:
+  push:
+    branches:
+      - main
+jobs:
+  checkout:
+    runs-on: realworld-runner
+    steps:
+      - uses: actions/checkout@v4
+  deploy:
+    runs-on: realworld-runner
+    needs: checkout
+    steps:
+      - name: deploy
+        env:
+          JWT_KEY: ${JWT_KEY}
+          PROD_DB_USERNAME: ${POSTGRES_USER}
+          PROD_DB_PASSWORD: ${POSTGRES_PASSWORD}
+        run: |
+         docker-compose build
+         docker-compose up -d
+         docker image prune -f
