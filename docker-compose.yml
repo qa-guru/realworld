@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+  realworld:
+    build: .
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - JWT_KEY=${JWT_KEY}
+      - PROD_DB_USERNAME=${POSTGRES_USER}
+      - PROD_DB_PASSWORD=${POSTGRES_PASSWORD}
+      - PROD_DB_NAME=realworld
+      - PROD_DB_HOSTNAME=postgres
+      - PROD_DB_DIALECT=postgres
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:12
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=realworld
+    volumes:
+      - realworld-data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+
+volumes:
+  realworld-data:
+
