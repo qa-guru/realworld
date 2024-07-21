@@ -1,8 +1,8 @@
-name: deploy_production
+name: deploy_developement
 on:
   push:
     branches:
-      - main
+      - dev
 jobs:
   checkout:
     runs-on: realworld-runner
@@ -14,12 +14,12 @@ jobs:
     steps:
       - name: deploy
         env:
-          ENV: production
-          PREFIX: PROD
-          JWT_KEY: ${JWT_KEY}
+          ENV: development
+          PREFIX: DEV
+          JWT_KEY: ${STAGE_JWT_KEY}
           POSTGRES_USER: ${POSTGRES_USER}
-          POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-          PORT: 3001
+          POSTGRES_PASSWORD: ${STAGE_POSTGRES_PASSWORD}
+          PORT: 3002
         run: |
          docker-compose --project-name realworld-${ENV} build
          docker-compose --project-name realworld-${ENV} up -d

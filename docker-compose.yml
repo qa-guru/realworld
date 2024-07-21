@@ -5,15 +5,15 @@ services:
     build: .
     restart: unless-stopped
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=${ENV}
       - JWT_KEY=${JWT_KEY}
-      - PROD_DB_USERNAME=${POSTGRES_USER}
-      - PROD_DB_PASSWORD=${POSTGRES_PASSWORD}
-      - PROD_DB_NAME=realworld
-      - PROD_DB_HOSTNAME=postgres
-      - PROD_DB_DIALECT=postgres
+      - ${PREFIX}_DB_USERNAME=${POSTGRES_USER}
+      - ${PREFIX}_DB_PASSWORD=${POSTGRES_PASSWORD}
+      - ${PREFIX}_DB_NAME=realworld
+      - ${PREFIX}_DB_HOSTNAME=postgres
+      - ${PREFIX}_DB_DIALECT=postgres
     ports:
-      - "3001:3001"
+      - "${PORT}:3001"
     depends_on:
       - postgres
 
