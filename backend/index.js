@@ -3,6 +3,7 @@ const env = process.env.NODE_ENV || "development";
 const PORT = process.env.PORT || 3001;
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const { sequelize } = require("./models");
 const errorHandler = require("./middleware/errorHandler");
 
@@ -25,19 +26,29 @@ app.use(express.json());
   }
 })();
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static("../frontend/dist"));
-} else {
-  app.get("/", (req, res) => res.json({ status: "API is running on /api" }));
-}
+// API routes must come BEFORE static files and catch-all route
 app.use("/api/users", usersRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/articles", articlesRoutes);
 app.use("/api/profiles", profilesRoutes);
 app.use("/api/tags", tagsRoutes);
-app.get("*", (req, res) =>
-  res.status(404).json({ errors: { body: ["Not found"] } }),
-);
+
+if (process.env.NODE_ENV === "production") {
+  // Serve static files from the React app build directory
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  
+  // Handle React routing, return all requests to React app
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
+  });
+} else {
+  app.get("/", (req, res) => res.json({ status: "API is running on /api" }));
+  
+  app.get("*", (req, res) =>
+    res.status(404).json({ errors: { body: ["Not found"] } }),
+  );
+}
+
 app.use(errorHandler);
 
 app.listen(PORT, () =>
